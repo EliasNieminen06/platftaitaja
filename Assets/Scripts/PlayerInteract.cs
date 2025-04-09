@@ -3,10 +3,16 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviour
 {
+    public static PlayerInteract instance;
     public GameObject interactionUI;
     public TextMeshProUGUI interactionText;
     bool itemFound = false;
     Interactable interactable;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Update()
     {
@@ -15,10 +21,14 @@ public class PlayerInteract : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 interactable.Interact();
-                itemFound = false;
-                interactionUI.SetActive(itemFound);
             }
         }
+    }
+
+    public void hideUI()
+    {
+        itemFound = false;
+        interactionUI.SetActive(itemFound);
     }
 
     private void OnTriggerEnter(Collider other)
