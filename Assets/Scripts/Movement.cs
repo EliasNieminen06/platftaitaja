@@ -37,8 +37,11 @@ public class Player : MonoBehaviour
 
     public Animator anim;
 
-
     CharacterController characterController;
+
+    public bool fallRespawn = false;
+    public float fallDistance = -15f;
+    public Transform checkpoint;
 
     private void Awake()
     {
@@ -71,6 +74,16 @@ public class Player : MonoBehaviour
             else
             {
                 ThirdPersonCam();
+            }
+        }
+        if (fallRespawn)
+        {
+            if (transform.position.y < fallDistance)
+            {
+                characterController.enabled = false;
+                transform.position = checkpoint.position;
+                moveDirection.y = 0;
+                characterController.enabled = true;
             }
         }
     }
