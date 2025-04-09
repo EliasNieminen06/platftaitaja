@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
 
     public bool isFirstPerson = true;
 
+    public Animator anim;
+
 
     CharacterController characterController;
 
@@ -99,6 +101,7 @@ public class Player : MonoBehaviour
         if (Input.GetButton("Jump") && canMove && canJump && characterController.isGrounded)
         {
             moveDirection.y = jumpPower;
+            anim.SetTrigger("jump");
         }
         else
         {
@@ -111,6 +114,15 @@ public class Player : MonoBehaviour
         }
 
         characterController.Move(moveDirection * Time.deltaTime);
+
+        if (characterController.velocity.magnitude > 0.1)
+        {
+            anim.SetBool("run", true);
+        }
+        else
+        {
+            anim.SetBool("run", false);
+        }
     }
 
     void FirstPersonCam()
@@ -147,6 +159,7 @@ public class Player : MonoBehaviour
         if (Input.GetButton("Jump") && canMove && canJump && characterController.isGrounded)
         {
             moveDirection.y = jumpPower;
+            anim.SetTrigger("jump");
         }
         else
         {
@@ -169,6 +182,16 @@ public class Player : MonoBehaviour
 
             // Smoothly rotate the player toward the movement direction
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        }
+
+        if (characterController.velocity.magnitude > 0.1)
+        {
+            anim.SetBool("run", true);
+            anim.speed = characterController.velocity.magnitude / walkSpeed;
+        }
+        else
+        {
+            anim.SetBool("run", false);
         }
     }
 

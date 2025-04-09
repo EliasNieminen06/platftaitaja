@@ -8,7 +8,7 @@ public class MovingPlatform : MonoBehaviour
     int currentWayPoint = 0;
     bool movingForward = true;
 
-    void Update()
+    void FixedUpdate()
     {
         if (wayPoints.Count == 0)
             return;
