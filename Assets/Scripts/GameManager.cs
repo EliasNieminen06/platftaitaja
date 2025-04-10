@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     public void FinishGame()
     {
         gameOn = false;
-        if (timer < PlayerPrefs.GetFloat("RecordTime"));
+        if (timer < PlayerPrefs.GetFloat("RecordTime"))
         {
             PlayerPrefs.SetFloat("RecordTime", timer);
             PlayerPrefs.SetString("formattedTime", formattedTime);

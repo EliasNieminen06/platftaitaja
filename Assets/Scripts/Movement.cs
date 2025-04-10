@@ -1,12 +1,4 @@
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Cinemachine;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.UIElements.Experimental;
-using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
