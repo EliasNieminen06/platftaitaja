@@ -3729,9 +3729,9 @@ MonoBehaviour:
   walkVolume: 1
   walkPitch: 1
   walkLoop: 1
-  jumpSound: {fileID: 8300000, guid: 360f931d98608564a8118343ea762398, type: 3}
-  jumpVolume: 0.5
-  jumpPitch: 0.5
+  jumpSound: {fileID: 8300000, guid: a6efa314d7ba16b46a081bb4189ea1d2, type: 3}
+  jumpVolume: 1
+  jumpPitch: 1
   jumpLoop: 0
 --- !u!136 &674378744
 CapsuleCollider:

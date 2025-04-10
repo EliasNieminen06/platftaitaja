@@ -37,7 +37,13 @@ public class GameManager : MonoBehaviour
     public void FinishGame()
     {
         gameOn = false;
-        PlayerPrefs.SetString("formattedTime", formattedTime);
+        if (timer < PlayerPrefs.GetFloat("RecordTime"));
+        {
+            PlayerPrefs.SetFloat("RecordTime", timer);
+            PlayerPrefs.SetString("formattedTime", formattedTime);
+        }
         SceneManager.LoadScene("MainMenu");
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 }

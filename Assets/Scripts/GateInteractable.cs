@@ -22,5 +22,9 @@ public class GateInteractable : MonoBehaviour, Interactable
             transform.parent.GetComponent<Gate>().Open();
             PlayerInteract.instance.hideUI();
         }
+        else
+        {
+            Announcements.instance.Announce("Missing key!", 2);
+        }
     }
 }
