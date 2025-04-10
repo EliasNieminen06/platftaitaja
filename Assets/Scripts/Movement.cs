@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UIElements.Experimental;
 using static UnityEngine.GraphicsBuffer;
 
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     public Transform checkpoint;
     [Header("Walk Sound")]
     public AudioClip walkSound;
+    public AudioClip runSound;
     AudioSource walkSoundSource;
     [Range(0f, 1f)] public float walkVolume = 1f;
     [Range(0f, 2f)] public float walkPitch = 1f;
@@ -57,16 +59,20 @@ public class Player : MonoBehaviour
         if (jumpSound != null )
         {
             jumpSoundSource = gameObject.AddComponent<AudioSource>();
+            jumpSoundSource.clip = jumpSound;
             jumpSoundSource.volume = jumpVolume;
             jumpSoundSource.pitch = jumpPitch;
             jumpSoundSource.loop = jumpLoop;
+            jumpSoundSource.playOnAwake = false;
         }
         if (walkSound != null )
         {
             walkSoundSource = gameObject.AddComponent<AudioSource>();
+            walkSoundSource.clip = walkSound;
             walkSoundSource.volume = walkVolume;
             walkSoundSource.pitch = walkPitch;
             walkSoundSource.loop = walkLoop;
+            walkSoundSource.playOnAwake = false;
         }
     }
 
@@ -140,10 +146,28 @@ public class Player : MonoBehaviour
 
             // Smoothly rotate the player toward the movement direction
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
+        }
 
+        if (new Vector3(moveDirection.x, 0, moveDirection.z).magnitude > 0.1f && characterController.isGrounded)
+        {
             anim.SetBool("run", true);
             anim.speed = characterController.velocity.magnitude / walkSpeed;
-            walkSoundSource.Play();
+            if (isRunning)
+            {
+                if (!walkSoundSource.isPlaying || walkSoundSource.clip != runSound)
+                {
+                    walkSoundSource.clip = runSound;
+                    walkSoundSource.Play();
+                }
+            }
+            else
+            {
+                if (!walkSoundSource.isPlaying || walkSoundSource.clip != walkSound)
+                {
+                    walkSoundSource.clip = walkSound;
+                    walkSoundSource.Play();
+                }
+            }
         }
         else
         {
@@ -151,5 +175,6 @@ public class Player : MonoBehaviour
             anim.speed = 1;
             walkSoundSource.Stop();
         }
+
     }
 }
