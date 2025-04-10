@@ -15,5 +15,9 @@ public class Altar : MonoBehaviour, Interactable
         {
             GameManager.instance.FinishGame();
         }
+        else
+        {
+            Announcements.instance.Announce("Missing gems!", 2);
+        }
     }
 }

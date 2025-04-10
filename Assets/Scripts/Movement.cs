@@ -86,6 +86,8 @@ public class Player : MonoBehaviour
                 transform.position = checkpoint.position;
                 moveDirection.y = 0;
                 characterController.enabled = true;
+                Announcements.instance.Announce("You fell off the map +20s!", 2);
+                GameManager.instance.timer += 20f;
             }
         }
     }

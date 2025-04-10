@@ -18,6 +18,7 @@ public class GateInteractable : MonoBehaviour, Interactable
     {
         if (key == keys.key1 && Inventory.Instance.key1 == true || key == keys.key2 && Inventory.Instance.key2 == true)
         {
+            Announcements.instance.Announce("Opened the gate!", 2);
             transform.parent.GetComponent<Gate>().Open();
             PlayerInteract.instance.hideUI();
         }

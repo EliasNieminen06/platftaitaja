@@ -22,24 +22,28 @@ public class Item : MonoBehaviour, Interactable
         {
             Inventory.Instance.key1 = true;
             PlayerInteract.instance.hideUI();
+            Announcements.instance.Announce("Picked up a key!", 2);
             Destroy(gameObject);
         }
         else if (item == items.key2)
         {
             Inventory.Instance.key2 = true;
             PlayerInteract.instance.hideUI();
+            Announcements.instance.Announce("Picked up a key!", 2);
             Destroy(gameObject);
         }
         else if (item == items.gem1)
         {
             Inventory.Instance.gem1 = true;
             PlayerInteract.instance.hideUI();
+            Announcements.instance.Announce("Picked up a gem!", 2);
             Destroy(gameObject);
         }
         else if (item == items.gem2)
         {
             Inventory.Instance.gem2 = true;
             PlayerInteract.instance.hideUI();
+            Announcements.instance.Announce("Picked up a gem!", 2);
             Destroy(gameObject);
         }
     }
