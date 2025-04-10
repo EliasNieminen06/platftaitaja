@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
@@ -10,38 +11,38 @@ using static UnityEngine.GraphicsBuffer;
 public class Player : MonoBehaviour
 {
     public static Player instance;
+    [Header("Player Camera")]
     public Camera playerCamera;
-    public Transform camPivot;
-
-    public Vector3 tPOffset;
-
+    [Header("Movement Variables")]
     public float walkSpeed = 6f;
     public float runSpeed = 12f;
     public float jumpPower = 5f;
     public float gravity = 10f;
-
-
-    public float lookSpeed = 2f;
-    public float lookXLimit = 90f;
-
-
     Vector3 moveDirection = Vector3.zero;
-    float rotationX = 0;
-    float rotationY = 0;
-
+    [Header("Movement Toggles")]
     public bool canMove = true;
     public bool canRun = true;
     public bool canJump = true;
-
-    public bool isFirstPerson = true;
-
+    [Header("Animator")]
     public Animator anim;
-
+    [Header("Character Controller")]
     CharacterController characterController;
-
+    [Header("Fall Respawn")]
     public bool fallRespawn = false;
     public float fallDistance = -15f;
     public Transform checkpoint;
+    [Header("Walk Sound")]
+    public AudioClip walkSound;
+    AudioSource walkSoundSource;
+    [Range(0f, 1f)] public float walkVolume = 1f;
+    [Range(0f, 2f)] public float walkPitch = 1f;
+    public bool walkLoop = true;
+    [Header("Jump Sound")]
+    public AudioClip jumpSound;
+    AudioSource jumpSoundSource;
+    [Range(0f, 1f)] public float jumpVolume = 1f;
+    [Range(0f, 2f)] public float jumpPitch = 1f;
+    public bool jumpLoop = false;
 
     private void Awake()
     {
@@ -51,31 +52,26 @@ public class Player : MonoBehaviour
     void Start()
     {
         characterController = GetComponent<CharacterController>();
-        if (isFirstPerson)
-        {
-            playerCamera.transform.position = camPivot.position;
-        }
-        else
-        {
-            playerCamera.transform.position = camPivot.position+tPOffset;
-        }
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        if (jumpSound != null )
+        {
+            jumpSoundSource = gameObject.AddComponent<AudioSource>();
+            jumpSoundSource.volume = jumpVolume;
+            jumpSoundSource.pitch = jumpPitch;
+            jumpSoundSource.loop = jumpLoop;
+        }
+        if (walkSound != null )
+        {
+            walkSoundSource = gameObject.AddComponent<AudioSource>();
+            walkSoundSource.volume = walkVolume;
+            walkSoundSource.pitch = walkPitch;
+            walkSoundSource.loop = walkLoop;
+        }
     }
 
     private void Update()
     {
-        if (canMove)
-        {
-            if (isFirstPerson)
-            {
-                FirstPersonCam();
-            }
-            else
-            {
-                ThirdPersonCam();
-            }
-        }
         if (fallRespawn)
         {
             if (transform.position.y < fallDistance)
@@ -90,60 +86,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isFirstPerson)
-        {
-            FPPlayerMovement();
-        }
-        else
-        {
-            TPPlayerMovement();
-        }
-    }
-
-    void FPPlayerMovement()
-    {
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-        Vector3 right = transform.TransformDirection(Vector3.right);
-
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
-        float curSpeedX = canMove ? (isRunning && canRun ? runSpeed : walkSpeed) * Input.GetAxis("Vertical") : 0;
-        float curSpeedY = canMove ? (isRunning && canRun ? runSpeed : walkSpeed) * Input.GetAxis("Horizontal") : 0;
-        float movementDirectionY = moveDirection.y;
-        moveDirection = (forward * curSpeedX) + (right * curSpeedY);
-
-        if (Input.GetButton("Jump") && canMove && canJump && characterController.isGrounded)
-        {
-            moveDirection.y = jumpPower;
-            anim.SetTrigger("jump");
-        }
-        else
-        {
-            moveDirection.y = movementDirectionY;
-        }
-
-        if (!characterController.isGrounded)
-        {
-            moveDirection.y -= gravity * Time.deltaTime;
-        }
-
-        characterController.Move(moveDirection * Time.deltaTime);
-
-        if (characterController.velocity.magnitude > 0.1)
-        {
-            anim.SetBool("run", true);
-        }
-        else
-        {
-            anim.SetBool("run", false);
-        }
-    }
-
-    void FirstPersonCam()
-    {
-        rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
-        rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-        playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
-        transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+        TPPlayerMovement();
     }
 
     void TPPlayerMovement()
@@ -173,10 +116,12 @@ public class Player : MonoBehaviour
         {
             moveDirection.y = jumpPower;
             anim.SetTrigger("jump");
+            jumpSoundSource.Play();
         }
         else
         {
             moveDirection.y = movementDirectionY;
+            anim.speed = 1;
         }
 
         if (!characterController.isGrounded)
@@ -195,21 +140,16 @@ public class Player : MonoBehaviour
 
             // Smoothly rotate the player toward the movement direction
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10 * Time.deltaTime);
-        }
 
-        if (characterController.velocity.magnitude > 0.1)
-        {
             anim.SetBool("run", true);
             anim.speed = characterController.velocity.magnitude / walkSpeed;
+            walkSoundSource.Play();
         }
         else
         {
             anim.SetBool("run", false);
+            anim.speed = 1;
+            walkSoundSource.Stop();
         }
-    }
-
-    void ThirdPersonCam()
-    {
-        
     }
 }
